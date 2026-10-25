@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Percentage Calculator</title>
+<style>
+:root{--bg:#f6f7f4;--card:#fff;--tx:#1d2a1f;--mut:#5d6b5f;--ac:#2e7d32;--bd:#d9dfd6;--res:#e8f3e8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111611;--card:#1b231b;--tx:#e8efe8;--mut:#a3b0a3;--ac:#66bb6a;--bd:#2f3b2f;--res:#223322}}
+:root[data-theme="dark"]{--bg:#111611;--card:#1b231b;--tx:#e8efe8;--mut:#a3b0a3;--ac:#66bb6a;--bd:#2f3b2f;--res:#223322}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:8px 0 4px}
+p.s{color:var(--mut);margin:0 0 16px;font-size:.9rem}
+.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+.c h2{font-size:1rem;margin:0 0 2px;color:var(--ac)}
+.f{font-size:.8rem;color:var(--mut);margin:0 0 10px}
+.r{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1 1 110px;min-width:0;padding:10px;font-size:1rem;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+.o{margin-top:10px;padding:10px;border-radius:8px;background:var(--res);font-weight:600;min-height:2.6em}
+</style>
+</head>
+<body>
+<main>
+<h1>Percentage Calculator</h1>
+<p class="s">Number likhein, jawab khud aa jayega.</p>
+<div id="app"></div>
+</main>
+<script>
+const f=n=>isFinite(n)?(Math.round(n*100)/100).toLocaleString('en-US'):'';
+const T=[
+{t:'1. Kisi number ka % nikalo',f:'jawab = (number × %) ÷ 100',i:['Number','Percent %'],c:(a,b)=>`${b}% of ${a} = ${f(a*b/100)}`},
+{t:'2. Ek number doosre ka kitna % hai',f:'% = (hissa ÷ total) × 100',i:['Hissa','Total'],c:(a,b)=>`${f(a/b*100)} %`},
+{t:'3. % izafa ya kami (purana → naya)',f:'% = ((naya − purana) ÷ purana) × 100',i:['Purana','Naya'],c:(a,b)=>{const p=(b-a)/a*100;return `${f(Math.abs(p))} % ${p>=0?'izafa':'kami'}`}},
+{t:'4. Number mein % izafa karo',f:'jawab = number × (1 + %/100)',i:['Number','Percent %'],c:(a,b)=>`Naya number = ${f(a*(1+b/100))}`},
+{t:'5. Number mein se % kam karo',f:'jawab = number × (1 − %/100)',i:['Number','Percent %'],c:(a,b)=>`Naya number = ${f(a*(1-b/100))}`},
+{t:'6. Total maloom karo (hissa aur % se)',f:'total = (hissa × 100) ÷ %',i:['Hissa','Percent %'],c:(a,b)=>`Total = ${f(a*100/b)}`},
+{t:'7. Nafa / Nuqsan %',f:'% = ((bechna − kharid) ÷ kharid) × 100',i:['Kharid qeemat','Bechne ki qeemat'],c:(a,b)=>{const d=b-a,p=d/a*100;return `${d>=0?'Nafa':'Nuqsan'} = ${f(Math.abs(d))} (${f(Math.abs(p))} %)`}},
+{t:'8. Discount',f:'discount = qeemat × %/100',i:['Qeemat','Discount %'],c:(a,b)=>`Discount = ${f(a*b/100)} | Dene wali qeemat = ${f(a-a*b/100)}`},
+{t:'9. Tax / GST add karo',f:'total = qeemat × (1 + tax%/100)',i:['Qeemat','Tax %'],c:(a,b)=>`Tax = ${f(a*b/100)} | Total = ${f(a+a*b/100)}`},
+{t:'10. Tax wali qeemat se asal qeemat',f:'asal = total ÷ (1 + tax%/100)',i:['Total (tax samet)','Tax %'],c:(a,b)=>`Asal qeemat = ${f(a/(1+b/100))} | Tax = ${f(a-a/(1+b/100))}`}
+];
+const app=document.getElementById('app');
+T.forEach(x=>{
+const d=document.createElement('div');d.className='c';
+d.innerHTML=`<h2>${x.t}</h2><p class="f">${x.f}</p><div class="r"><input type="number" inputmode="decimal" placeholder="${x.i[0]}"><input type="number" inputmode="decimal" placeholder="${x.i[1]}"></div><div class="o"></div>`;
+const [a,b]=d.querySelectorAll('input'),o=d.querySelector('.o');
+const u=()=>{if(a.value===''||b.value===''){o.textContent='';return}const r=x.c(+a.value,+b.value);o.textContent=/NaN|Infinity/.test(r)?'Sahi number likhein':r};
+a.oninput=b.oninput=u;app.appendChild(d)});
+</script>
+</body>
+</html>
