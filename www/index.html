@@ -1,45 +1,74 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="ur" dir="rtl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Calculator</title>
+<title>کیلکولیٹر</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.1.1/tesseract.min.js"></script>
 <style>
 :root{--bg:#f6f7f4;--card:#fff;--tx:#1d2a1f;--mut:#5d6b5f;--ac:#2e7d32;--bd:#d9dfd6;--res:#e8f3e8;--key:#eef1ec;--op:#dcebdc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root{--bg:#111611;--card:#1b231b;--tx:#e8efe8;--mut:#a3b0a3;--ac:#66bb6a;--bd:#2f3b2f;--res:#223322;--key:#263126;--op:#2f4a2f}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Noto Nastaliq Urdu","Jameel Noori Nastaleeq","Noto Naskh Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.8}
 main{max-width:420px;margin:0 auto;padding:16px}
 h1{font-size:1.3rem;margin:6px 0 14px}
 .c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
 h2{font-size:1rem;margin:0 0 10px;color:var(--ac)}
 .r{display:flex;gap:8px}
-input{flex:1;min-width:0;padding:10px;font-size:1rem;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx)}
+input{flex:1;min-width:0;padding:10px;font-size:1rem;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-family:inherit}
 .o{margin-top:10px;padding:10px;border-radius:8px;background:var(--res);font-weight:600;min-height:2.6em}
-#d{background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:right;font-size:2rem;min-height:3.4rem;overflow-x:auto;white-space:nowrap}
-#k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-button{padding:16px 0;font-size:1.3rem;border:1px solid var(--bd);border-radius:10px;background:var(--key);color:var(--tx);cursor:pointer}
+#d{direction:ltr;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:right;font-size:2rem;min-height:3.4rem;overflow-x:auto;white-space:nowrap;line-height:1.4;font-family:system-ui,sans-serif}
+#k{direction:ltr;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+button{padding:16px 0;font-size:1.3rem;border:1px solid var(--bd);border-radius:10px;background:var(--key);color:var(--tx);cursor:pointer;font-family:system-ui,sans-serif}
 button.op{background:var(--op);font-weight:700}
 button.eq{background:var(--ac);color:#fff;font-weight:700}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button.sc{width:100%;padding:12px;font-size:1rem;margin-bottom:10px;background:var(--op);font-family:inherit}
+#io{white-space:pre-line}
+.m{font-size:.8rem;color:var(--mut);margin-top:8px}
+.ai{white-space:pre-wrap;font-size:.95rem;color:var(--tx)}
+summary{cursor:pointer;color:var(--ac);margin-top:10px}
 </style>
 </head>
 <body>
 <main>
-<h1>Calculator</h1>
+<h1>کیلکولیٹر</h1>
 
 <div class="c">
-<h2>Discount Calculator</h2>
+<h2>ڈسکاؤنٹ کیلکولیٹر</h2>
 <div class="r">
-<input id="p" type="number" inputmode="decimal" placeholder="Qeemat">
-<input id="q" type="number" inputmode="decimal" placeholder="Discount %">
+<input id="p" type="number" inputmode="decimal" placeholder="قیمت">
+<input id="q" type="number" inputmode="decimal" placeholder="ڈسکاؤنٹ %">
 </div>
 <div class="o" id="o"></div>
 </div>
 
 <div class="c">
-<h2>Calculator</h2>
+<h2>عام کیلکولیٹر</h2>
 <div id="d">0</div>
 <div id="k"></div>
+</div>
+<div class="c">
+<h2>انوائس ٹیکس کیلکولیٹر</h2>
+<button class="sc" id="sc">📷 سادہ اسکین (بغیر AI)</button>
+<input id="im" type="file" accept="image/*" hidden>
+<button class="sc" id="ai">🤖 AI سے انوائس پڑھوائیں</button>
+<input id="ia" type="file" accept="image/*" hidden>
+<input id="iqn" type="text" placeholder="AI سے سوال (اختیاری)، جیسے: ٹیکس کا فارمولا بتاؤ" style="width:100%;margin-bottom:10px">
+<div class="g">
+<input id="iq" type="number" inputmode="decimal" placeholder="تعداد (پیک)">
+<input id="ir" type="number" inputmode="decimal" placeholder="ریٹ">
+<input id="idc" type="number" inputmode="decimal" placeholder="ڈسکاؤنٹ %">
+<input id="itx" type="number" inputmode="decimal" placeholder="ایڈوانس انکم ٹیکس (رقم)">
+</div>
+<div class="o" id="io"></div>
+<div class="m" id="is"></div>
+<div class="m ai" id="ao"></div>
+<details><summary>AI سیٹنگ</summary>
+<input id="ak" type="password" placeholder="Gemini API Key" style="width:100%;margin:8px 0">
+<input id="am" type="text" value="gemini-3.1-flash-lite" style="width:100%">
+<div class="m">key صرف آپ کے فون میں رہتی ہے۔ مفت key aistudio.google.com/apikey سے بنائیں اور billing آن نہ کریں۔</div>
+</details>
 </div>
 </main>
 <script>
@@ -48,10 +77,96 @@ const p=document.getElementById('p'),q=document.getElementById('q'),o=document.g
 function disc(){
   if(p.value===''||q.value===''){o.textContent='';return}
   const a=+p.value,b=+q.value,d=a*b/100;
-  o.textContent='Discount = '+fm(d)+' | Dene wali qeemat = '+fm(a-d);
+  o.textContent='ڈسکاؤنٹ = '+fm(d)+' | دینے والی قیمت = '+fm(a-d);
 }
 p.oninput=q.oninput=disc;
 
+const iq=document.getElementById('iq'),ir=document.getElementById('ir'),idc=document.getElementById('idc'),itx=document.getElementById('itx'),io=document.getElementById('io'),im=document.getElementById('im'),st=document.getElementById('is');
+function inv(){
+  const q=+iq.value,r=+ir.value,dp=+idc.value,t=+itx.value;
+  if(!q||!r){io.textContent='';return}
+  const g=q*r,dd=g*dp/100,n=g-dd;
+  let s='کل گراس = '+fm(g)+'\nڈسکاؤنٹ = '+fm(dd)+'\nنیٹ ویلیو = '+fm(n)+'\nایک پیک نیٹ = '+fm(n/q);
+  if(itx.value!==''){
+    s+='\nٹیکس % (نیٹ پر) = '+(Math.round(t/n*100000)/1000)+' %';
+    s+='\nٹیکس % (گراس پر) = '+(Math.round(t/g*100000)/1000)+' %';
+    s+='\nایک پیک پر ٹیکس = '+fm(t/q);
+    s+='\nایک پیک فائنل = '+fm((n+t)/q);
+    s+='\nکل فائنل رقم = '+fm(n+t);
+  }
+  io.textContent=s;
+}
+[iq,ir,idc,itx].forEach(e=>e.oninput=inv);
+function num(s){return s.includes(',')?parseFloat(s.replace(/\./g,'').replace(',','.')):parseFloat(s)}
+function parseInv(text){
+  for(const L of text.split('\n')){
+    const m=L.match(/(\d+)\s*P[CEG][EF]/i);
+    if(m){
+      const rest=L.slice(L.indexOf(m[0])+m[0].length);
+      const nums=(rest.match(/\d[\d.]*,\d{2}/g)||[]).map(num);
+      iq.value=m[1];
+      if(nums[0])ir.value=nums[0];
+      if(nums[1])idc.value=nums[1];
+      break;
+    }
+  }
+  const t=text.match(/Advance\s*Income\s*Tax\s*(\d[\d.]*(?:,\d{2})?)/i);
+  if(t)itx.value=num(t[1]);
+  inv();
+}
+document.getElementById('sc').onclick=()=>im.click();
+im.onchange=async()=>{
+  const f=im.files[0];if(!f)return;
+  if(typeof Tesseract==='undefined'){st.textContent='اسکین کے لیے انٹرنیٹ چاہیے۔ نمبر خود لکھ دیں۔';return}
+  st.textContent='انوائس پڑھ رہا ہوں، کچھ انتظار کریں...';
+  try{
+    const r=await Tesseract.recognize(f,'eng');
+    parseInv(r.data.text);
+    st.textContent='نمبر بھر دیے ہیں۔ انوائس سے ملا کر چیک کریں، غلط ہوں تو خود ٹھیک کریں۔';
+  }catch(e){st.textContent='اسکین نہیں ہو سکا۔ نمبر خود لکھ دیں۔'}
+  im.value='';
+};
+const ak=document.getElementById('ak'),am=document.getElementById('am'),ao=document.getElementById('ao'),ia=document.getElementById('ia'),iqn=document.getElementById('iqn');
+try{ak.value=localStorage.getItem('gk')||'';am.value=localStorage.getItem('gm')||am.value}catch(e){}
+ak.onchange=()=>{try{localStorage.setItem('gk',ak.value.trim())}catch(e){}};
+am.onchange=()=>{try{localStorage.setItem('gm',am.value.trim())}catch(e){}};
+document.getElementById('ai').onclick=()=>{
+  if(!ak.value.trim()){ao.textContent='پہلے نیچے AI سیٹنگ میں Gemini key لکھیں۔';return}
+  ia.click();
+};
+function shrink(f){return new Promise((ok,bad)=>{
+  const u=URL.createObjectURL(f),i=new Image();
+  i.onload=()=>{const s=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');
+    c.width=Math.round(i.width*s);c.height=Math.round(i.height*s);
+    c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);
+    ok(c.toDataURL('image/jpeg',0.85).split(',')[1])};
+  i.onerror=bad;i.src=u;
+})}
+const NN={type:'NUMBER',nullable:true};
+ia.onchange=async()=>{
+  const f=ia.files[0];if(!f)return;
+  ao.textContent='AI انوائس پڑھ رہا ہے، انتظار کریں...';
+  try{
+    const b64=await shrink(f),ask=iqn.value.trim();
+    const prompt='یہ ایک پاکستانی زرعی کمپنی کی انوائس کی تصویر ہے۔ پہلی آئٹم کی تعداد qty، ریٹ فی یونٹ rate، ڈسکاؤنٹ فیصد disc اور ایڈوانس انکم ٹیکس کی رقم tax پڑھو۔ نمبر ویسے ہی دو جیسے انوائس میں ہیں، جہاں 1.945,00 لکھا ہو وہاں 1945 ہوگا۔ اگر کوئی نمبر صاف نظر نہ آئے تو null لکھو، اندازہ مت لگاؤ۔ پھر jawab میں آسان اردو میں بتاؤ: انوائس میں کیا ہے، نیٹ ویلیو کیسے بنی، ٹیکس کتنے فیصد ہے، اور ایک پیک پر ٹیکس اور فائنل قیمت کتنی بنتی ہے، فارمولے کے ساتھ۔ '+(ask?('صارف کا سوال: '+ask):'');
+    const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(am.value.trim())+':generateContent',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-goog-api-key':ak.value.trim()},
+      body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:'image/jpeg',data:b64}},{text:prompt}]}],
+        generationConfig:{responseMimeType:'application/json',responseSchema:{type:'OBJECT',properties:{qty:NN,rate:NN,disc:NN,tax:NN,jawab:{type:'STRING'}},required:['jawab']}}})
+    });
+    const j=await r.json();
+    if(!r.ok){ao.textContent='AI سے جواب نہیں آیا: '+((j.error&&j.error.message)||r.status);return}
+    const o=JSON.parse(j.candidates[0].content.parts[0].text);
+    if(o.qty!=null)iq.value=o.qty;
+    if(o.rate!=null)ir.value=o.rate;
+    if(o.disc!=null)idc.value=o.disc;
+    if(o.tax!=null)itx.value=o.tax;
+    inv();
+    ao.textContent=o.jawab+'\n\n(AI کے پڑھے نمبر انوائس سے ضرور ملا لیں۔)';
+  }catch(e){ao.textContent='AI استعمال نہیں ہو سکا۔ انٹرنیٹ اور key چیک کریں۔'}
+  ia.value='';
+};
 const d=document.getElementById('d');
 let cur='0',prev=null,op=null,fresh=false;
 function show(){d.textContent=cur}
