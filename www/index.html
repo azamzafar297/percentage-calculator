@@ -15,7 +15,7 @@ h1{font-size:1.3rem;margin:6px 0 14px}
 .c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
 h2{font-size:1rem;margin:0 0 10px;color:var(--ac)}
 .r{display:flex;gap:8px}
-input{flex:1;min-width:0;padding:10px;font-size:1rem;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-family:inherit}
+input,select{flex:1;min-width:0;padding:10px;font-size:1rem;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-family:inherit}
 .o{margin-top:10px;padding:10px;border-radius:8px;background:var(--res);font-weight:600;min-height:2.6em}
 #d{direction:ltr;background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:right;font-size:2rem;min-height:3.4rem;overflow-x:auto;white-space:nowrap;line-height:1.4;font-family:system-ui,sans-serif}
 #k{direction:ltr;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
@@ -24,7 +24,7 @@ button.op{background:var(--op);font-weight:700}
 button.eq{background:var(--ac);color:#fff;font-weight:700}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 button.sc{width:100%;padding:12px;font-size:1rem;margin-bottom:10px;background:var(--op);font-family:inherit}
-#io,#fo,#go{white-space:pre-line}
+#io,#fo,#go,#ro,#co,#bo,#to{white-space:pre-line}
 .m{font-size:.8rem;color:var(--mut);margin-top:8px}
 .ai{white-space:pre-wrap;font-size:.95rem;color:var(--tx)}
 summary{cursor:pointer;color:var(--ac);margin-top:10px}
@@ -59,6 +59,47 @@ summary{cursor:pointer;color:var(--ac);margin-top:10px}
 <input id="gp" type="number" inputmode="decimal" placeholder="نفع %">
 </div>
 <div class="o" id="go"></div>
+</div>
+
+<div class="c">
+<h2>رقبہ / ایکڑ کیلکولیٹر</h2>
+<div class="r">
+<input id="ra" type="number" inputmode="decimal" placeholder="رقبہ">
+<select id="ru"><option value="acre">ایکڑ</option><option value="kanal">کنال</option><option value="marla">مرلہ</option></select>
+</div>
+<div class="g" style="margin-top:8px">
+<input id="rd" type="number" inputmode="decimal" placeholder="دوائی فی ایکڑ (ml/گرام)">
+<input id="rp" type="number" inputmode="decimal" placeholder="پیک سائز (ml/گرام)">
+<input id="rw" type="number" inputmode="decimal" placeholder="پانی فی ایکڑ (لیٹر)">
+<input id="rt" type="number" inputmode="decimal" placeholder="ٹینک (لیٹر)">
+</div>
+<div class="o" id="ro"></div>
+<div class="m">دوائی کی مقدار ہمیشہ کمپنی کے لیبل سے دیکھ کر لکھیں۔</div>
+</div>
+
+<div class="c">
+<h2>یونٹ کنورٹر</h2>
+<div class="r">
+<input id="cv" type="number" inputmode="decimal" placeholder="مقدار">
+<select id="cu"><option value="acre">ایکڑ</option><option value="kanal">کنال</option><option value="marla">مرلہ</option><option value="maund">من</option><option value="kg">کلو</option><option value="ton">ٹن</option><option value="litre">لیٹر</option><option value="ml">ملی لیٹر</option></select>
+</div>
+<div class="o" id="co"></div>
+<h2 style="margin-top:14px">بوری سے فی کلو / فی من ریٹ</h2>
+<div class="r">
+<input id="bp" type="number" inputmode="decimal" placeholder="بوری کی قیمت">
+<input id="bw" type="number" inputmode="decimal" placeholder="وزن (کلو)">
+</div>
+<div class="o" id="bo"></div>
+</div>
+
+<div class="c">
+<h2>کارٹن / پیک حساب</h2>
+<div class="g">
+<input id="tn" type="number" inputmode="decimal" placeholder="کل پیک">
+<input id="tp" type="number" inputmode="decimal" placeholder="ایک کارٹن میں پیک">
+<input id="tc" type="number" inputmode="decimal" placeholder="ایک پیک کی قیمت (اختیاری)">
+</div>
+<div class="o" id="to"></div>
 </div>
 
 <div class="c">
@@ -114,6 +155,45 @@ function sp(){
 }
 fc.oninput=fs.oninput=pf;
 gc.oninput=gp.oninput=sp;
+const $=id=>document.getElementById(id);
+const U={acre:1,kanal:1/8,marla:1/160};
+function rk(){
+  const a=+$('ra').value*U[$('ru').value],dose=+$('rd').value,pk=+$('rp').value,w=+$('rw').value,t=+$('rt').value,out=$('ro');
+  if(!a){out.textContent='';return}
+  let s='رقبہ = '+(Math.round(a*10000)/10000)+' ایکڑ';
+  if(dose){
+    const tot=dose*a;
+    s+='\nکل دوائی = '+fm(tot)+' (ml/گرام)';
+    if(pk)s+='\nپیک = '+fm(tot/pk)+' (خریدنے کے لیے '+Math.ceil(tot/pk-1e-9)+' پیک)';
+    if(w&&t){const tk=w*a/t;s+='\nٹینک = '+fm(tk)+'\nدوائی فی ٹینک = '+fm(tot/tk)+' (ml/گرام)'}
+  }
+  out.textContent=s;
+}
+['ra','ru','rd','rp','rw','rt'].forEach(i=>$(i).addEventListener('input',rk));
+const UN={acre:['land',1],kanal:['land',1/8],marla:['land',1/160],maund:['wt',40],kg:['wt',1],ton:['wt',1000],litre:['vol',1000],ml:['vol',1]};
+const UL={acre:'ایکڑ',kanal:'کنال',marla:'مرلہ',maund:'من',kg:'کلو',ton:'ٹن',litre:'لیٹر',ml:'ملی لیٹر'};
+function cvt(){
+  if($('cv').value===''){$('co').textContent='';return}
+  const u=$('cu').value,base=(+$('cv').value)*UN[u][1];
+  let s='';
+  for(const k in UN){if(UN[k][0]===UN[u][0]&&k!==u)s+=(s?'\n':'')+UL[k]+' = '+(Math.round(base/UN[k][1]*10000)/10000)}
+  $('co').textContent=s;
+}
+['cv','cu'].forEach(i=>$(i).addEventListener('input',cvt));
+function bori(){
+  const pr=+$('bp').value,w=+$('bw').value;
+  if(!pr||!w){$('bo').textContent='';return}
+  $('bo').textContent='فی کلو = '+fm(pr/w)+'\nفی من (40 کلو) = '+fm(pr/w*40);
+}
+['bp','bw'].forEach(i=>$(i).addEventListener('input',bori));
+function ctn(){
+  const t=+$('tn').value,pp=+$('tp').value,pr=+$('tc').value;
+  if(!t||!pp){$('to').textContent='';return}
+  let s='پورے کارٹن = '+Math.floor(t/pp)+'\nباقی کھلے پیک = '+(t%pp);
+  if(pr)s+='\nایک کارٹن کی قیمت = '+fm(pr*pp)+'\nکل قیمت = '+fm(pr*t);
+  $('to').textContent=s;
+}
+['tn','tp','tc'].forEach(i=>$(i).addEventListener('input',ctn));
 const iq=document.getElementById('iq'),ir=document.getElementById('ir'),idc=document.getElementById('idc'),itx=document.getElementById('itx'),io=document.getElementById('io'),im=document.getElementById('im'),st=document.getElementById('is');
 function inv(){
   const q=+iq.value,r=+ir.value,dp=+idc.value,t=+itx.value;
@@ -247,3 +327,8 @@ keys.forEach(x=>{
   if(x[2])b.className=x[2];
   if(x[0]==='=')b.style.gridRow='span 2';
   b.onclick=()=>press(x[0]);
+  kb.appendChild(b);
+});
+</script>
+</body>
+</html>
