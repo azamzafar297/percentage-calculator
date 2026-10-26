@@ -24,7 +24,7 @@ button.op{background:var(--op);font-weight:700}
 button.eq{background:var(--ac);color:#fff;font-weight:700}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 button.sc{width:100%;padding:12px;font-size:1rem;margin-bottom:10px;background:var(--op);font-family:inherit}
-#io{white-space:pre-line}
+#io,#fo,#go{white-space:pre-line}
 .m{font-size:.8rem;color:var(--mut);margin-top:8px}
 .ai{white-space:pre-wrap;font-size:.95rem;color:var(--tx)}
 summary{cursor:pointer;color:var(--ac);margin-top:10px}
@@ -41,6 +41,24 @@ summary{cursor:pointer;color:var(--ac);margin-top:10px}
 <input id="q" type="number" inputmode="decimal" placeholder="ڈسکاؤنٹ %">
 </div>
 <div class="o" id="o"></div>
+</div>
+
+<div class="c">
+<h2>نفع / نقصان کیلکولیٹر</h2>
+<div class="r">
+<input id="fc" type="number" inputmode="decimal" placeholder="خرید قیمت">
+<input id="fs" type="number" inputmode="decimal" placeholder="بیچنے کی قیمت">
+</div>
+<div class="o" id="fo"></div>
+</div>
+
+<div class="c">
+<h2>نفع فیصد لگا کر بیچنے کی قیمت</h2>
+<div class="r">
+<input id="gc" type="number" inputmode="decimal" placeholder="خرید قیمت">
+<input id="gp" type="number" inputmode="decimal" placeholder="نفع %">
+</div>
+<div class="o" id="go"></div>
 </div>
 
 <div class="c">
@@ -81,6 +99,21 @@ function disc(){
 }
 p.oninput=q.oninput=disc;
 
+const fc=document.getElementById('fc'),fs=document.getElementById('fs'),fo=document.getElementById('fo'),gc=document.getElementById('gc'),gp=document.getElementById('gp'),go=document.getElementById('go');
+function pf(){
+  if(fc.value===''||fs.value===''){fo.textContent='';return}
+  const c=+fc.value,s=+fs.value;
+  if(!c){fo.textContent='خرید قیمت صفر نہیں ہو سکتی';return}
+  const d=s-c,w=d>=0?'نفع':'نقصان';
+  fo.textContent=w+' = '+fm(Math.abs(d))+'\n'+w+' % = '+(Math.round(Math.abs(d)/c*10000)/100)+' %';
+}
+function sp(){
+  if(gc.value===''||gp.value===''){go.textContent='';return}
+  const c=+gc.value,pr=c*(+gp.value)/100;
+  go.textContent='نفع = '+fm(pr)+'\nبیچنے کی قیمت = '+fm(c+pr);
+}
+fc.oninput=fs.oninput=pf;
+gc.oninput=gp.oninput=sp;
 const iq=document.getElementById('iq'),ir=document.getElementById('ir'),idc=document.getElementById('idc'),itx=document.getElementById('itx'),io=document.getElementById('io'),im=document.getElementById('im'),st=document.getElementById('is');
 function inv(){
   const q=+iq.value,r=+ir.value,dp=+idc.value,t=+itx.value;
@@ -214,8 +247,3 @@ keys.forEach(x=>{
   if(x[2])b.className=x[2];
   if(x[0]==='=')b.style.gridRow='span 2';
   b.onclick=()=>press(x[0]);
-  kb.appendChild(b);
-});
-</script>
-</body>
-</html>
